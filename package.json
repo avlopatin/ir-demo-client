@@ -1,10 +1,12 @@
 {
   "name": "ir-demo-client",
+  "proxy": "https://api.independentreserve.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "connected-react-router": "^6.4.0",
     "history": "^4.9.0",
+    "immer": "^3.0.0",
     "normalizr": "^3.3.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -12,6 +14,7 @@
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
     "redux": "^4.0.1",
+    "redux-logger": "^3.0.6",
     "redux-saga": "^1.0.2",
     "reselect": "^4.0.0"
   },
@@ -19,7 +22,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier": "prettier --write \"**/*.js\""
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -30,9 +34,8 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx}": [
-      "pretty-quick --staged",
-      "eslint src/ --fix",
+    "*.js": [
+      "npm run prettier",
       "git add"
     ]
   },
@@ -44,7 +47,6 @@
   ],
   "devDependencies": {
     "eslint": "5.12.0",
-    "eslint-config-airbnb": "^17.1.0",
     "eslint-config-prettier": "^4.1.0",
     "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-jsx-a11y": "^6.2.1",
