@@ -1,3 +1,4 @@
 export const appName = 'ir-demo-client'
 
-export const settings = {}
+export const XBT_CURRENCY = 'Xbt'
+export const AUD_CURRENCY = 'Aud'

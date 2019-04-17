@@ -4,8 +4,12 @@ import history from '../history'
 import currenciesReducer, {
   moduleName as currenciesModule
 } from '../ducks/currencies'
+import settingsReducer, {
+  moduleName as settingsModule
+} from '../ducks/settings'
 
 export default combineReducers({
   router: connectRouter(history),
-  [currenciesModule]: currenciesReducer
+  [currenciesModule]: currenciesReducer,
+  [settingsModule]: settingsReducer
 })

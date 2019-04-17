@@ -1,15 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import {
-  fetchPrimaryCurrencies,
-  fetchSecondaryCurrencies
-} from '../ducks/currencies'
+import { initSettings } from '../ducks/settings'
 
 class Hello extends Component {
   componentDidMount() {
-    const { fetchSecondaryCurrencies, fetchPrimaryCurrencies } = this.props
-    fetchSecondaryCurrencies()
-    fetchPrimaryCurrencies()
+    const { initSettings } = this.props
+    initSettings()
   }
 
   render() {
@@ -19,5 +15,5 @@ class Hello extends Component {
 
 export default connect(
   null,
-  { fetchSecondaryCurrencies, fetchPrimaryCurrencies }
+  { initSettings }
 )(Hello)

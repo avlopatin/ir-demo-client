@@ -25,18 +25,17 @@ const initialState = {
   secondary: []
 }
 export default function reducer(state = initialState, action) {
-  // eslint-disable-line no-console
   return produce(state, (draft) => {
     const { type, payload } = action
     switch (type) {
       case FETCH_PRIMARY_CURRENCIES_SUCCESS:
         draft.primary = payload
-        return
-
+        break
       case FETCH_SECONDARY_CURRENCIES_SUCCESS:
         draft.secondary = payload
-
+        break
       default:
+        break
     }
   })
 }
