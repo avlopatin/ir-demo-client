@@ -1,8 +1,5 @@
 import { schema } from 'normalizr'
-import {
-  FETCH_PRIMARY_CURRENCIES_SUCCESS,
-  FETCH_SECONDARY_CURRENCIES_SUCCESS
-} from '../ducks/currencies'
+import { FETCH_CURRENCIES_SUCCESS } from '../ducks/currencies'
 
 export const currencyKey = 'currencies'
 export const currency = new schema.Entity(
@@ -12,6 +9,5 @@ export const currency = new schema.Entity(
 )
 
 export const actionsMeta = {
-  [FETCH_PRIMARY_CURRENCIES_SUCCESS]: { schema: [currency], key: currencyKey },
-  [FETCH_SECONDARY_CURRENCIES_SUCCESS]: { schema: [currency], key: currencyKey }
+  [FETCH_CURRENCIES_SUCCESS]: { schema: [currency], key: currencyKey }
 }

@@ -1,5 +1,9 @@
 class Api {
-  loadCurrencies = (url, isPrimary) => {
+  loadCurrencies = (isPrimary) => {
+    const url = isPrimary
+      ? '/Public/GetValidPrimaryCurrencyCodes'
+      : '/Public/GetValidSecondaryCurrencyCodes'
+
     return fetch(url)
       .then((res) => res.json())
       .then((res) =>
@@ -7,14 +11,6 @@ class Api {
           return { name, isPrimary }
         })
       )
-  }
-
-  loadPrimaryCurrencies = () => {
-    return this.loadCurrencies('/Public/GetValidPrimaryCurrencyCodes', true)
-  }
-
-  loadSecondaryCurrencies = () => {
-    return this.loadCurrencies('/Public/GetValidSecondaryCurrencyCodes', false)
   }
 }
 

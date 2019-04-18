@@ -1,7 +1,7 @@
 import { put, all, takeEvery } from 'redux-saga/effects'
 import { produce } from 'immer'
 import { appName, AUD_CURRENCY, XBT_CURRENCY } from '../config'
-import { fetchPrimaryCurrencies, fetchSecondaryCurrencies } from './currencies'
+import { initCurrencies } from './currencies'
 
 /**
  * Constants
@@ -47,8 +47,7 @@ export function* initSettingsSaga() {
     type: INIT_START
   })
 
-  yield put(fetchPrimaryCurrencies())
-  yield put(fetchSecondaryCurrencies())
+  yield put(initCurrencies())
 
   yield put({
     type: INIT_SUCCESS

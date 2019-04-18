@@ -1,5 +1,5 @@
 import { put, all, takeEvery, call } from 'redux-saga/effects'
-import { produce } from 'immer'
+import { produce, original } from 'immer'
 import { appName } from '../config'
 import api from '../services/api'
 
@@ -9,30 +9,22 @@ import api from '../services/api'
 export const moduleName = 'currencies'
 export const prefix = `${appName}/${moduleName}`
 
-export const FETCH_PRIMARY_CURRENCIES_REQUEST = `${prefix}/FETCH_PRIMARY_CURRENCIES_REQUEST`
-export const FETCH_PRIMARY_CURRENCIES_START = `${prefix}/FETCH_PRIMARY_CURRENCIES_START`
-export const FETCH_PRIMARY_CURRENCIES_SUCCESS = `${prefix}/FETCH_PRIMARY_CURRENCIES_SUCCESS`
-
-export const FETCH_SECONDARY_CURRENCIES_REQUEST = `${prefix}/FETCH_SECONDARY_CURRENCIES_REQUEST`
-export const FETCH_SECONDARY_CURRENCIES_START = `${prefix}/FETCH_SECONDARY_CURRENCIES_START`
-export const FETCH_SECONDARY_CURRENCIES_SUCCESS = `${prefix}/FETCH_SECONDARY_CURRENCIES_SUCCESS`
+export const INIT_CURRENCIES_REQUEST = `${prefix}/INIT_CURRENCIES_REQUEST`
+export const FETCH_CURRENCIES_START = `${prefix}/FETCH_CURRENCIES_START`
+export const FETCH_CURRENCIES_SUCCESS = `${prefix}/FETCH_CURRENCIES_SUCCESS`
 
 /**
  * Reducer
  */
 const initialState = {
-  primary: [],
-  secondary: []
+  entities: []
 }
 export default function reducer(state = initialState, action) {
   return produce(state, (draft) => {
     const { type, payload } = action
     switch (type) {
-      case FETCH_PRIMARY_CURRENCIES_SUCCESS:
-        draft.primary = payload
-        break
-      case FETCH_SECONDARY_CURRENCIES_SUCCESS:
-        draft.secondary = payload
+      case FETCH_CURRENCIES_SUCCESS:
+        draft.entities = Object.assign(original(draft.entities), payload)
         break
       default:
         break
@@ -47,45 +39,32 @@ export default function reducer(state = initialState, action) {
 /**
  * Action Creators
  */
-export const fetchPrimaryCurrencies = () => ({
-  type: FETCH_PRIMARY_CURRENCIES_REQUEST
-})
 
-export const fetchSecondaryCurrencies = () => ({
-  type: FETCH_SECONDARY_CURRENCIES_REQUEST
+export const initCurrencies = () => ({
+  type: INIT_CURRENCIES_REQUEST
 })
 
 /**
  * Sagas
  */
-export function* fetchCurrenciesSaga(apiMethod, onStart, onSuccess) {
+export function* fetchCurrenciesSaga(isPrimary) {
   yield put({
-    type: onStart
+    type: FETCH_CURRENCIES_START
   })
 
-  const data = yield call(apiMethod)
+  const data = yield call(api.loadCurrencies, isPrimary)
 
   yield put({
-    type: onSuccess,
+    type: FETCH_CURRENCIES_SUCCESS,
     payload: data
   })
 }
 
+export function* initCurrenciesSaga() {
+  yield fetchCurrenciesSaga(true)
+  yield fetchCurrenciesSaga(false)
+}
+
 export function* saga() {
-  yield all([
-    takeEvery(
-      FETCH_PRIMARY_CURRENCIES_REQUEST,
-      fetchCurrenciesSaga,
-      api.loadPrimaryCurrencies,
-      FETCH_PRIMARY_CURRENCIES_START,
-      FETCH_PRIMARY_CURRENCIES_SUCCESS
-    ),
-    takeEvery(
-      FETCH_SECONDARY_CURRENCIES_REQUEST,
-      fetchCurrenciesSaga,
-      api.loadSecondaryCurrencies,
-      FETCH_SECONDARY_CURRENCIES_START,
-      FETCH_SECONDARY_CURRENCIES_SUCCESS
-    )
-  ])
+  yield all([takeEvery(INIT_CURRENCIES_REQUEST, initCurrenciesSaga)])
 }
