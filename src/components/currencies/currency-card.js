@@ -1,6 +1,6 @@
 import React from 'react'
-import CurrencyName from '../common/CurrencyName'
-import CurrencyIcon from '../common/CurrencyIcon'
+import CurrencyName from '../common/currency-name'
+import CurrencyIcon from '../common/currency-icon'
 
 export default function CurrencyCard({ currency }) {
   return (
