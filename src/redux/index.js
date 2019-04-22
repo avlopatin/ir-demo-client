@@ -5,19 +5,17 @@ import logger from 'redux-logger'
 import history from '../history'
 import reducer from './reducer'
 import saga from './saga'
-import entitiesMiddleware from '../entities/middleware'
 
 const sagaMiddleware = createSagaMiddleware()
 
 const enhancer = applyMiddleware(
   sagaMiddleware,
   routerMiddleware(history),
-  entitiesMiddleware,
   logger
 )
 
 const store = createStore(reducer, enhancer)
-
+window.store = store
 sagaMiddleware.run(saga)
 
 export default store
