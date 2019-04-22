@@ -1,7 +1,7 @@
-import { put, all, takeEvery } from 'redux-saga/effects'
-import { produce } from 'immer'
+import { put, all, takeEvery, call } from 'redux-saga/effects'
 import { appName, AUD_CURRENCY, XBT_CURRENCY } from '../config'
-import { initCurrencies } from './currencies'
+import { initCurrenciesSaga } from './currencies'
+import { monitorTradesSaga } from './trades'
 
 /**
  * Constants
@@ -9,9 +9,9 @@ import { initCurrencies } from './currencies'
 export const moduleName = 'settings'
 export const prefix = `${appName}/${moduleName}`
 
-export const INIT_REQUEST = `${prefix}/INIT_REQUEST`
-export const INIT_START = `${prefix}/INIT_START`
-export const INIT_SUCCESS = `${prefix}/INIT_SUCCESS`
+export const INIT_SETTINGS_REQUEST = `${prefix}/INIT_SETTINGS_REQUEST`
+export const INIT_SETTINGS_START = `${prefix}/INIT_SETTINGS_START`
+export const INIT_SETTINGS_SUCCESS = `${prefix}/INIT_SETTINGS_SUCCESS`
 
 /**
  * Reducer
@@ -21,11 +21,7 @@ const initialState = {
   secondaryCurrency: AUD_CURRENCY
 }
 export default function reducer(state = initialState, action) {
-  return produce(state, (draft) => {
-    const { type, payload } = action
-    switch (type) {
-    }
-  })
+  return state
 }
 
 /**
@@ -36,7 +32,7 @@ export default function reducer(state = initialState, action) {
  * Action Creators
  */
 export const initSettings = () => ({
-  type: INIT_REQUEST
+  type: INIT_SETTINGS_REQUEST
 })
 
 /**
@@ -44,16 +40,18 @@ export const initSettings = () => ({
  */
 export function* initSettingsSaga() {
   yield put({
-    type: INIT_START
+    type: INIT_SETTINGS_START
   })
 
-  yield put(initCurrencies())
+  yield call(initCurrenciesSaga)
+
+  yield call(monitorTradesSaga)
 
   yield put({
-    type: INIT_SUCCESS
+    type: INIT_SETTINGS_SUCCESS
   })
 }
 
 export function* saga() {
-  yield all([takeEvery(INIT_REQUEST, initSettingsSaga)])
+  yield all([takeEvery(INIT_SETTINGS_REQUEST, initSettingsSaga)])
 }

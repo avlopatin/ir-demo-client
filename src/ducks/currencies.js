@@ -13,6 +13,7 @@ export const prefix = `${appName}/${moduleName}`
 export const INIT_CURRENCIES_REQUEST = `${prefix}/INIT_CURRENCIES_REQUEST`
 export const FETCH_CURRENCIES_START = `${prefix}/FETCH_CURRENCIES_START`
 export const FETCH_CURRENCIES_SUCCESS = `${prefix}/FETCH_CURRENCIES_SUCCESS`
+export const INIT_CURRENCIES_SUCCESS = `${prefix}/INIT_CURRENCIES_SUCCESS`
 
 /**
  * Reducer
@@ -47,7 +48,6 @@ export default function reducer(state = new ReducerRecord(), action) {
 /**
  * Selectors
  */
-
 export const stateSelector = (state) => state[moduleName]
 export const currenciesSelector = createSelector(
   stateSelector,
@@ -73,10 +73,6 @@ export const secondaryCurrenciesSelector = createSelector(
  * Action Creators
  */
 
-export const initCurrencies = () => ({
-  type: INIT_CURRENCIES_REQUEST
-})
-
 /**
  * Sagas
  */
@@ -96,8 +92,12 @@ export function* fetchCurrenciesSaga(isPrimary) {
 export function* initCurrenciesSaga() {
   yield fetchCurrenciesSaga(true)
   yield fetchCurrenciesSaga(false)
+
+  yield put({
+    type: INIT_CURRENCIES_SUCCESS
+  })
 }
 
 export function* saga() {
-  yield all([takeEvery(INIT_CURRENCIES_REQUEST, initCurrenciesSaga)])
+  yield all([])
 }

@@ -7,9 +7,11 @@ import currenciesReducer, {
 import settingsReducer, {
   moduleName as settingsModule
 } from '../ducks/settings'
+import tradesReducer, { moduleName as tradesModule } from '../ducks/trades'
 
 export default combineReducers({
   router: connectRouter(history),
   [currenciesModule]: currenciesReducer,
-  [settingsModule]: settingsReducer
+  [settingsModule]: settingsReducer,
+  [tradesModule]: tradesReducer
 })
