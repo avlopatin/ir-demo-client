@@ -10,7 +10,6 @@ import { createSelector } from 'reselect'
 export const moduleName = 'currencies'
 export const prefix = `${appName}/${moduleName}`
 
-export const INIT_CURRENCIES_REQUEST = `${prefix}/INIT_CURRENCIES_REQUEST`
 export const FETCH_CURRENCIES_START = `${prefix}/FETCH_CURRENCIES_START`
 export const FETCH_CURRENCIES_SUCCESS = `${prefix}/FETCH_CURRENCIES_SUCCESS`
 export const INIT_CURRENCIES_SUCCESS = `${prefix}/INIT_CURRENCIES_SUCCESS`

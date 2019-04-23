@@ -1,4 +1,4 @@
-import { put, all, takeEvery, call } from 'redux-saga/effects'
+import { put, all, takeEvery, call, fork } from 'redux-saga/effects'
 import { appName, AUD_CURRENCY, XBT_CURRENCY } from '../config'
 import { initCurrenciesSaga } from './currencies'
 import { monitorTradesSaga } from './trades'
@@ -45,7 +45,7 @@ export function* initSettingsSaga() {
 
   yield call(initCurrenciesSaga)
 
-  yield call(monitorTradesSaga)
+  yield fork(monitorTradesSaga, AUD_CURRENCY)
 
   yield put({
     type: INIT_SETTINGS_SUCCESS

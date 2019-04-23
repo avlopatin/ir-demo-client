@@ -3,11 +3,16 @@ import { connect } from 'react-redux'
 import { primaryCurrenciesSelector } from '../../ducks/currencies'
 import CurrencyCard from './currency-card'
 
+const secondaryCurrency = { name: 'aud', isPrimary: false }
+
 function CurrenciesList({ primaryCurrencies }) {
-  function renderRow(currency) {
+  function renderRow(primaryCurrency) {
     return (
-      <div className="col-md-3" key={currency.name}>
-        <CurrencyCard currency={currency} />
+      <div className="col-md-3" key={primaryCurrency.name}>
+        <CurrencyCard
+          primaryCurrency={primaryCurrency}
+          secondaryCurrency={secondaryCurrency}
+        />
       </div>
     )
   }
@@ -24,7 +29,4 @@ const mapStateToProps = (state) => ({
   primaryCurrencies: primaryCurrenciesSelector(state)
 })
 
-export default connect(
-  mapStateToProps,
-  null
-)(CurrenciesList)
+export default connect(mapStateToProps)(CurrenciesList)
