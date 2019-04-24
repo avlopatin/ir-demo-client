@@ -2,6 +2,9 @@ import { put, all, takeEvery, call, fork } from 'redux-saga/effects'
 import { appName, AUD_CURRENCY, XBT_CURRENCY } from '../config'
 import { initCurrenciesSaga } from './currencies'
 import { monitorTradesSaga } from './trades'
+import { createSelector } from 'reselect'
+import { normalizeCurrencyName } from '../utils'
+import { Record } from 'immutable'
 
 /**
  * Constants
@@ -12,27 +15,65 @@ export const prefix = `${appName}/${moduleName}`
 export const INIT_SETTINGS_REQUEST = `${prefix}/INIT_SETTINGS_REQUEST`
 export const INIT_SETTINGS_START = `${prefix}/INIT_SETTINGS_START`
 export const INIT_SETTINGS_SUCCESS = `${prefix}/INIT_SETTINGS_SUCCESS`
-
+export const SETTINGS_CHANGE_SELECTED_PRIMARY_CURRENCY = `${prefix}/SETTINGS_CHANGE_SELECTED_PRIMARY_CURRENCY`
+export const SETTINGS_CHANGE_SELECTED_SECONDARY_CURRENCY = `${prefix}/SETTINGS_CHANGE_SELECTED_SECONDARY_CURRENCY`
 /**
  * Reducer
  */
-const initialState = {
+
+const ReducerRecord = Record({
   primaryCurrency: XBT_CURRENCY,
   secondaryCurrency: AUD_CURRENCY
-}
-export default function reducer(state = initialState, action) {
+})
+
+export default function reducer(state = new ReducerRecord(), action) {
+  const { type, payload } = action
+  switch (type) {
+    case SETTINGS_CHANGE_SELECTED_PRIMARY_CURRENCY:
+      return state.set('primaryCurrency', payload)
+    case SETTINGS_CHANGE_SELECTED_SECONDARY_CURRENCY:
+      return state.set('secondaryCurrency', payload)
+  }
   return state
 }
 
 /**
  * Selectors
  */
-
+export const stateSelector = (state) => state[moduleName]
+export const selectedPrimaryCurrency = createSelector(
+  stateSelector,
+  (state) => normalizeCurrencyName(state.primaryCurrency)
+)
+export const selectedSecondaryCurrency = createSelector(
+  stateSelector,
+  (state) => normalizeCurrencyName(state.secondaryCurrency)
+)
+const currencyNameSelector = (state, currencyName) => currencyName
+export const isCurrencySelected = createSelector(
+  currencyNameSelector,
+  selectedPrimaryCurrency,
+  selectedSecondaryCurrency,
+  (currencyName, primary, secondary) => {
+    const normalizedName = normalizeCurrencyName(currencyName)
+    return normalizedName === primary || normalizedName === secondary
+  }
+)
 /**
  * Action Creators
  */
 export const initSettings = () => ({
   type: INIT_SETTINGS_REQUEST
+})
+
+export const changeSelectedPrimaryCurrency = (primary) => ({
+  type: SETTINGS_CHANGE_SELECTED_PRIMARY_CURRENCY,
+  payload: primary
+})
+
+export const changeSelectedSecondaryCurrency = (secondary) => ({
+  type: SETTINGS_CHANGE_SELECTED_SECONDARY_CURRENCY,
+  payload: secondary
 })
 
 /**

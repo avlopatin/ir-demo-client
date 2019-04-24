@@ -5,8 +5,13 @@ import Price from '../common/price'
 import CurrencyName from '../common/currency-name'
 import CurrencyIcon from '../common/currency-icon'
 import { lastTradeSelector } from '../../ducks/trades'
+import { selectedSecondaryCurrency } from '../../ducks/settings'
 
-function CurrencyCard({ primaryCurrency, secondaryCurrency, lastTrade }) {
+function PrimaryCurrencyCard({
+  primaryCurrency,
+  secondaryCurrency,
+  lastTrade
+}) {
   function renderLastTradeTime() {
     if (!lastTrade) {
       return
@@ -25,7 +30,9 @@ function CurrencyCard({ primaryCurrency, secondaryCurrency, lastTrade }) {
       return
     }
 
-    return <Price price={lastTrade.price} currency={secondaryCurrency} />
+    return (
+      <Price price={lastTrade.price} currency={selectedSecondaryCurrency} />
+    )
   }
 
   return (
@@ -46,11 +53,18 @@ function CurrencyCard({ primaryCurrency, secondaryCurrency, lastTrade }) {
   )
 }
 
-const mapStateToProps = (state, { primaryCurrency, secondaryCurrency }) => ({
-  lastTrade: lastTradeSelector(
+const mapStateToProps = (state, { primaryCurrency }) => {
+  const secondaryCurrency = selectedSecondaryCurrency(state)
+  const lastTrade = lastTradeSelector(
     state,
     primaryCurrency.name,
-    secondaryCurrency.name
+    secondaryCurrency
   )
-})
-export default connect(mapStateToProps)(CurrencyCard)
+
+  return {
+    secondaryCurrency,
+    lastTrade
+  }
+}
+
+export default connect(mapStateToProps)(PrimaryCurrencyCard)

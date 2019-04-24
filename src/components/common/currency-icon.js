@@ -8,6 +8,7 @@ import omg from 'cryptocurrency-icons/svg/color/omg.svg'
 import zrx from 'cryptocurrency-icons/svg/color/zrx.svg'
 import eos from 'cryptocurrency-icons/svg/color/eos.svg'
 import xlm from 'cryptocurrency-icons/svg/color/xlm.svg'
+
 import notFound from 'cryptocurrency-icons/svg/color/generic.svg'
 
 const getIcon = ({ name }) => {

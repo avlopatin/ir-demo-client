@@ -1,16 +1,14 @@
-import React, { Component } from 'react'
-import CurrenciesList from '../currencies/currencies-list'
+import React from 'react'
+import SecondaryCurrenciesList from '../currencies/secondary-currencies-list'
+import PrimaryCurrenciesList from '../currencies/primary-currencies-list'
 
-class CurrenciesPage extends Component {
-  static propTypes = {}
-
-  render() {
-    return (
-      <div>
-        <CurrenciesList />
-      </div>
-    )
-  }
+function CurrenciesPage() {
+  return (
+    <>
+      <SecondaryCurrenciesList />
+      <PrimaryCurrenciesList />
+    </>
+  )
 }
 
 export default CurrenciesPage

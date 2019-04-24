@@ -64,7 +64,7 @@ export const primaryCurrenciesSelector = createSelector(
 )
 
 export const secondaryCurrenciesSelector = createSelector(
-  currenciesFilterSelector(true),
+  currenciesFilterSelector(false),
   (currencies) => currencies
 )
 
