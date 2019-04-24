@@ -1,7 +1,7 @@
-import { put, all, takeEvery, call, fork } from 'redux-saga/effects'
+import { put, all, takeEvery, select, call, fork } from 'redux-saga/effects'
 import { appName, AUD_CURRENCY, XBT_CURRENCY } from '../config'
 import { initCurrenciesSaga } from './currencies'
-import { monitorTradesSaga } from './trades'
+import { startMonitoringTradesSaga, stopMonitoringTradesSaga } from './trades'
 import { createSelector } from 'reselect'
 import { Record } from 'immutable'
 
@@ -14,8 +14,8 @@ export const prefix = `${appName}/${moduleName}`
 export const INIT_SETTINGS_REQUEST = `${prefix}/INIT_SETTINGS_REQUEST`
 export const INIT_SETTINGS_START = `${prefix}/INIT_SETTINGS_START`
 export const INIT_SETTINGS_SUCCESS = `${prefix}/INIT_SETTINGS_SUCCESS`
-export const SETTINGS_CHANGE_SELECTED_PRIMARY_CURRENCY = `${prefix}/SETTINGS_CHANGE_SELECTED_PRIMARY_CURRENCY`
 export const SETTINGS_CHANGE_SELECTED_SECONDARY_CURRENCY = `${prefix}/SETTINGS_CHANGE_SELECTED_SECONDARY_CURRENCY`
+
 /**
  * Reducer
  */
@@ -28,8 +28,6 @@ const ReducerRecord = Record({
 export default function reducer(state = new ReducerRecord(), action) {
   const { type, payload } = action
   switch (type) {
-    case SETTINGS_CHANGE_SELECTED_PRIMARY_CURRENCY:
-      return state.set('primaryCurrency', payload)
     case SETTINGS_CHANGE_SELECTED_SECONDARY_CURRENCY:
       return state.set('secondaryCurrency', payload)
   }
@@ -64,11 +62,6 @@ export const initSettings = () => ({
   type: INIT_SETTINGS_REQUEST
 })
 
-export const changeSelectedPrimaryCurrency = (primary) => ({
-  type: SETTINGS_CHANGE_SELECTED_PRIMARY_CURRENCY,
-  payload: primary
-})
-
 export const changeSelectedSecondaryCurrency = (secondary) => ({
   type: SETTINGS_CHANGE_SELECTED_SECONDARY_CURRENCY,
   payload: secondary
@@ -84,7 +77,7 @@ export function* initSettingsSaga() {
 
   yield call(initCurrenciesSaga)
 
-  yield fork(monitorTradesSaga, AUD_CURRENCY)
+  yield fork(startMonitoringTradesSaga)
 
   yield put({
     type: INIT_SETTINGS_SUCCESS

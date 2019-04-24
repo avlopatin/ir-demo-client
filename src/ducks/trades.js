@@ -1,8 +1,10 @@
 import { appName } from '../config'
 import { all, put, call, take, select } from 'redux-saga/effects'
 import Socket, { buildTickerChannels } from '../services/sockets'
-import { primaryCurrenciesSelector } from './currencies'
-import { AUD_CURRENCY } from '../config'
+import {
+  primaryCurrenciesSelector,
+  secondaryCurrenciesSelector
+} from './currencies'
 import { parseCurrencyPair } from '../utils'
 import { Map, Record } from 'immutable'
 import { createSelector } from 'reselect'
@@ -118,15 +120,16 @@ const newTrade = (trade) => ({
  * Sagas
  */
 
-export function* monitorTradesSaga() {
-  put({
-    action: TRADES_MONITOR_START
+export function* startMonitoringTradesSaga() {
+  yield put({
+    type: TRADES_MONITOR_START
   })
 
   const state = yield select()
   const primaryCurrencies = primaryCurrenciesSelector(state)
+  const secondaryCurrencies = secondaryCurrenciesSelector(state)
 
-  const url = buildTickerChannels(primaryCurrencies, AUD_CURRENCY)
+  const url = buildTickerChannels(primaryCurrencies, secondaryCurrencies)
   const channel = yield call(createWsChannel, url)
 
   try {

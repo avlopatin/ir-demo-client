@@ -5,7 +5,7 @@ import { isCurrencySelected } from '../../ducks/settings'
 
 function CurrencyButton({ currency, onClick, isCurrencySelected }) {
   const clazz = `btn btn-sm btn-${isCurrencySelected ? 'primary' : 'default'}`
-  const handleClick = () => onClick(currency)
+  const handleClick = () => isCurrencySelected || onClick(currency)
   return (
     <button className={clazz} onClick={handleClick}>
       <CurrencyName currency={currency} />
