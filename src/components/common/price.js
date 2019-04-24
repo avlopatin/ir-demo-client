@@ -3,13 +3,11 @@ import CurrencyName from './currency-name'
 import { DECIMAL_PLACES } from '../../config'
 
 function Price({ currency, price }) {
-  function renderPrice() {
-    return (
-      <>
-        <CurrencyName currency={currency} /> {price.toFixed(DECIMAL_PLACES)}
-      </>
-    )
-  }
+  const renderPrice = () => (
+    <>
+      <CurrencyName currency={currency} /> {price.toFixed(DECIMAL_PLACES)}
+    </>
+  )
   return <span> {price == null ? '-' : renderPrice()}</span>
 }
 

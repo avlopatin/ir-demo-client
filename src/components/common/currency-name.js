@@ -1,7 +1,4 @@
 import React, { memo } from 'react'
 
-function CurrencyName({ currency }) {
-  return <>{currency.toLocaleUpperCase()}</>
-}
-
+const CurrencyName = ({ currency }) => <>{currency.toLocaleUpperCase()}</>
 export default memo(CurrencyName)

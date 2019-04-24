@@ -8,6 +8,9 @@ import omg from 'cryptocurrency-icons/svg/color/omg.svg'
 import zrx from 'cryptocurrency-icons/svg/color/zrx.svg'
 import eos from 'cryptocurrency-icons/svg/color/eos.svg'
 import xlm from 'cryptocurrency-icons/svg/color/xlm.svg'
+import bat from 'cryptocurrency-icons/svg/color/bat.svg'
+import gnt from 'cryptocurrency-icons/svg/color/gnt.svg'
+import rep from 'cryptocurrency-icons/svg/color/rep.svg'
 
 import notFound from 'cryptocurrency-icons/svg/color/generic.svg'
 
@@ -31,13 +34,19 @@ const getIcon = (currency) => {
       return xlm
     case 'eos':
       return eos
+    case 'rep':
+      return rep
+    case 'bat':
+      return bat
+    case 'gnt':
+      return gnt
     default:
       return notFound
   }
 }
 
-function CurrencyIcon({ currency }) {
-  return <img src={getIcon(currency)} alt={currency} />
-}
+const CurrencyIcon = ({ currency }) => (
+  <img src={getIcon(currency)} alt={currency} />
+)
 
 export default memo(CurrencyIcon)
