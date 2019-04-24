@@ -30,13 +30,11 @@ function PrimaryCurrencyCard({
       return
     }
 
-    return (
-      <Price price={lastTrade.price} currency={selectedSecondaryCurrency} />
-    )
+    return <Price price={lastTrade.price} currency={secondaryCurrency} />
   }
 
   return (
-    <div className="card card-stats currency-button" key={primaryCurrency.name}>
+    <div className="card card-stats currency-button" key={primaryCurrency}>
       <div className="card-header card-header-success card-header-icon">
         <div className="card-icon">
           <CurrencyIcon currency={primaryCurrency} />
@@ -44,7 +42,7 @@ function PrimaryCurrencyCard({
         <p className="card-category">
           <strong>{<CurrencyName currency={primaryCurrency} />}</strong>
         </p>
-        <h3 className="card-title">{renderLastTradePrice()}</h3>
+        <h4 className="card-title">{renderLastTradePrice()}</h4>
       </div>
       <div className="card-footer">
         <div className="stats"> {renderLastTradeTime()}</div>

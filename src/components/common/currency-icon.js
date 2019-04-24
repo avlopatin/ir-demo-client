@@ -11,25 +11,25 @@ import xlm from 'cryptocurrency-icons/svg/color/xlm.svg'
 
 import notFound from 'cryptocurrency-icons/svg/color/generic.svg'
 
-const getIcon = ({ name }) => {
-  switch (name) {
-    case 'Xbt':
+const getIcon = (currency) => {
+  switch (currency) {
+    case 'xbt':
       return btc
-    case 'Eth':
+    case 'eth':
       return eth
-    case 'Xrp':
+    case 'xrp':
       return xrp
-    case 'Ltc':
+    case 'ltc':
       return ltc
-    case 'Bch':
+    case 'bch':
       return bch
-    case 'Zrx':
+    case 'zrx':
       return zrx
-    case 'Omg':
+    case 'omg':
       return omg
-    case 'Xlm':
+    case 'xlm':
       return xlm
-    case 'Eos':
+    case 'eos':
       return eos
     default:
       return notFound
@@ -37,7 +37,7 @@ const getIcon = ({ name }) => {
 }
 
 function CurrencyIcon({ currency }) {
-  return <img src={getIcon(currency)} alt={currency.name} />
+  return <img src={getIcon(currency)} alt={currency} />
 }
 
 export default memo(CurrencyIcon)
