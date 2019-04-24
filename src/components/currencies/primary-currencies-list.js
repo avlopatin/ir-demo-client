@@ -6,7 +6,7 @@ import PrimaryCurrencyCard from './primary-currency-card'
 function PrimaryCurrenciesList({ currencies }) {
   function renderRow(currency) {
     return (
-      <div className="col-md-3" key={currency.name}>
+      <div className="col-md-3" key={currency}>
         <PrimaryCurrencyCard primaryCurrency={currency} />
       </div>
     )

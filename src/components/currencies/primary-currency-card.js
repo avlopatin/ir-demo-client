@@ -55,11 +55,7 @@ function PrimaryCurrencyCard({
 
 const mapStateToProps = (state, { primaryCurrency }) => {
   const secondaryCurrency = selectedSecondaryCurrency(state)
-  const lastTrade = lastTradeSelector(
-    state,
-    primaryCurrency.name,
-    secondaryCurrency
-  )
+  const lastTrade = lastTradeSelector(state, primaryCurrency, secondaryCurrency)
 
   return {
     secondaryCurrency,

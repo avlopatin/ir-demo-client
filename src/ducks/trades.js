@@ -3,7 +3,7 @@ import { all, put, call, take, select } from 'redux-saga/effects'
 import Socket, { buildTickerChannels } from '../services/sockets'
 import { primaryCurrenciesSelector } from './currencies'
 import { AUD_CURRENCY } from '../config'
-import { parseCurrencyPair, normalizeCurrencyName } from '../utils'
+import { parseCurrencyPair } from '../utils'
 import { Map, Record } from 'immutable'
 import { createSelector } from 'reselect'
 
@@ -83,8 +83,8 @@ const stateSelector = (state) => state[moduleName]
 
 const currencyPairSelector = (state, primaryCurrency, secondaryCurrency) => {
   return {
-    primaryCurrency: normalizeCurrencyName(primaryCurrency),
-    secondaryCurrency: normalizeCurrencyName(secondaryCurrency)
+    primaryCurrency,
+    secondaryCurrency
   }
 }
 

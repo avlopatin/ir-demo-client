@@ -1,8 +1,9 @@
-import { put, all, takeEvery, call } from 'redux-saga/effects'
+import { put, all, call } from 'redux-saga/effects'
 import { Record, OrderedMap } from 'immutable'
 import { appName } from '../config'
 import api from '../services/api'
 import { createSelector } from 'reselect'
+import { normalizeCurrencyName } from '../utils'
 
 /**
  * Constants
@@ -55,7 +56,10 @@ export const currenciesSelector = createSelector(
 export const currenciesFilterSelector = (isPrimary) =>
   createSelector(
     currenciesSelector,
-    (currencies, _) => currencies.filter((cur) => cur.isPrimary === isPrimary)
+    (currencies) =>
+      currencies
+        .filter((cur) => cur.isPrimary === isPrimary)
+        .map((cur) => cur.name)
   )
 
 export const primaryCurrenciesSelector = createSelector(
@@ -82,9 +86,14 @@ export function* fetchCurrenciesSaga(isPrimary) {
 
   const data = yield call(api.loadCurrencies, isPrimary)
 
+  const currencies = data.map((currency) => {
+    currency.name = normalizeCurrencyName(currency.name)
+    return currency
+  })
+
   yield put({
     type: FETCH_CURRENCIES_SUCCESS,
-    payload: data
+    payload: currencies
   })
 }
 

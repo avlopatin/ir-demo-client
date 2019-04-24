@@ -1,7 +1,7 @@
 export const appName = 'ir-demo-client'
 
-export const XBT_CURRENCY = 'Xbt'
-export const AUD_CURRENCY = 'Aud'
+export const XBT_CURRENCY = 'xbt'
+export const AUD_CURRENCY = 'aud'
 
 export const DECIMAL_PLACES = 2
 

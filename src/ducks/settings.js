@@ -3,7 +3,6 @@ import { appName, AUD_CURRENCY, XBT_CURRENCY } from '../config'
 import { initCurrenciesSaga } from './currencies'
 import { monitorTradesSaga } from './trades'
 import { createSelector } from 'reselect'
-import { normalizeCurrencyName } from '../utils'
 import { Record } from 'immutable'
 
 /**
@@ -43,11 +42,11 @@ export default function reducer(state = new ReducerRecord(), action) {
 export const stateSelector = (state) => state[moduleName]
 export const selectedPrimaryCurrency = createSelector(
   stateSelector,
-  (state) => normalizeCurrencyName(state.primaryCurrency)
+  (state) => state.primaryCurrency
 )
 export const selectedSecondaryCurrency = createSelector(
   stateSelector,
-  (state) => normalizeCurrencyName(state.secondaryCurrency)
+  (state) => state.secondaryCurrency
 )
 const currencyNameSelector = (state, currencyName) => currencyName
 export const isCurrencySelected = createSelector(
@@ -55,8 +54,7 @@ export const isCurrencySelected = createSelector(
   selectedPrimaryCurrency,
   selectedSecondaryCurrency,
   (currencyName, primary, secondary) => {
-    const normalizedName = normalizeCurrencyName(currencyName)
-    return normalizedName === primary || normalizedName === secondary
+    return currencyName === primary || currencyName === secondary
   }
 )
 /**

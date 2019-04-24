@@ -10,7 +10,7 @@ function SecondaryCurrenciesList({
 }) {
   function renderRow(secondaryCurrency) {
     return (
-      <div key={secondaryCurrency.name}>
+      <div key={secondaryCurrency}>
         {
           <CurrencyButton
             currency={secondaryCurrency}

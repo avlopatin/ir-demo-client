@@ -25,7 +25,7 @@ class Socket {
 
 export const buildTickerChannels = (primaryCurrencies, secondaryCurrency) =>
   primaryCurrencies
-    .map((primary) => `ticker-${primary.name}-${secondaryCurrency}`)
+    .map((primaryCurrency) => `ticker-${primaryCurrency}-${secondaryCurrency}`)
     .join(',')
 
 export default new Socket()
