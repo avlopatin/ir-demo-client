@@ -18,6 +18,8 @@ export const prefix = `${appName}/${moduleName}`
 export const TRADES_MONITOR_START = `${prefix}/TRADES_MONITOR_START`
 const WS_EVENT_TRADE = 'Trade'
 const TRADES_NEW_TRADE = `${prefix}/TRADES_NEW_TRADE`
+export const TRADE_SIDE_BUY = 'Buy'
+export const TRADE_SIDE_SELL = 'Sell'
 
 /**
  * Reducer
@@ -105,6 +107,18 @@ export const lastTradeSelector = createSelector(
   currencyPairEntitiesSelector,
   (trades) => {
     return trades ? trades.valueSeq().last() : null
+  }
+)
+
+export const currencyPairTradesSelector = createSelector(
+  currencyPairEntitiesSelector,
+  (trades) => {
+    return trades
+      ? trades
+          .valueSeq()
+          .toArray()
+          .reverse()
+      : null
   }
 )
 
