@@ -6,11 +6,13 @@ import CurrencyName from '../common/currency-name'
 import CurrencyIcon from '../common/currency-icon'
 import { lastTradeSelector } from '../../ducks/trades'
 import { selectedSecondaryCurrency } from '../../ducks/settings'
+import { push } from 'connected-react-router'
 
 function PrimaryCurrencyCard({
   primaryCurrency,
   secondaryCurrency,
-  lastTrade
+  lastTrade,
+  openDetails
 }) {
   function renderLastTradeTime() {
     if (!lastTrade) {
@@ -24,7 +26,6 @@ function PrimaryCurrencyCard({
       </>
     )
   }
-
   function renderLastTradePrice() {
     if (!lastTrade) {
       return
@@ -32,9 +33,14 @@ function PrimaryCurrencyCard({
 
     return <Price price={lastTrade.price} currency={secondaryCurrency} />
   }
+  const handleClick = () => openDetails(primaryCurrency)
 
   return (
-    <div className="card card-stats currency-button" key={primaryCurrency}>
+    <div
+      className="card card-stats currency-button"
+      key={primaryCurrency}
+      onClick={handleClick}
+    >
       <div className="card-header card-header-success card-header-icon">
         <div className="card-icon">
           <CurrencyIcon currency={primaryCurrency} />
@@ -61,4 +67,11 @@ const mapStateToProps = (state, { primaryCurrency }) => {
   }
 }
 
-export default connect(mapStateToProps)(PrimaryCurrencyCard)
+const mapDispatchToProps = {
+  openDetails: (primaryCurrency) => push(`/currencies/${primaryCurrency}`)
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PrimaryCurrencyCard)

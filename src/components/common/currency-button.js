@@ -3,8 +3,9 @@ import { connect } from 'react-redux'
 import CurrencyName from './currency-name'
 import { isCurrencySelected } from '../../ducks/settings'
 
-function CurrencyButton({ currency, onClick, isCurrencySelected }) {
+function CurrencyButton({ currency, classes, onClick, isCurrencySelected }) {
   const clazz = `btn btn-sm btn-${isCurrencySelected ? 'primary' : 'default'}`
+
   const handleClick = () => isCurrencySelected || onClick(currency)
   return (
     <button className={clazz} onClick={handleClick}>
