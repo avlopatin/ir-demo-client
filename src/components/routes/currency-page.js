@@ -31,4 +31,5 @@ function CurrencyPage({ secondaryCurrency, match }) {
 const mapStateToProps = (state) => ({
   secondaryCurrency: selectedSecondaryCurrency(state)
 })
+
 export default connect(mapStateToProps)(CurrencyPage)

@@ -1,6 +1,9 @@
 import { eventChannel } from 'redux-saga'
 import { SOCKET_BASE_URL } from '../config'
 
+const CHANNEL_TICKER = 'ticker'
+const CHANNEL_ORDEBOOK = 'orderbook'
+
 class Socket {
   init = ({ url, processMessage }) => {
     return eventChannel((emitter) => {
@@ -23,11 +26,18 @@ class Socket {
   }
 }
 
-export const buildTickerChannels = (primaryCurrencies, secondaryCurrencies) =>
+export const buildTickerChannel = (primaryCurrencies, secondaryCurrencies) =>
+  buildChannel(CHANNEL_TICKER, primaryCurrencies, secondaryCurrencies)
+
+export const buildOrderBookChannel = (primaryCurrencies, secondaryCurrencies) =>
+  buildChannel(CHANNEL_ORDEBOOK, primaryCurrencies, secondaryCurrencies)
+
+const buildChannel = (channel, primaryCurrencies, secondaryCurrencies) =>
   primaryCurrencies
     .map((primaryCurrency) =>
       secondaryCurrencies.map(
-        (secondaryCurrency) => `ticker-${primaryCurrency}-${secondaryCurrency}`
+        (secondaryCurrency) =>
+          `${channel}-${primaryCurrency}-${secondaryCurrency}`
       )
     )
     .join(',')

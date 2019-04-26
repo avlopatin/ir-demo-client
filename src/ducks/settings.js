@@ -1,7 +1,8 @@
-import { put, all, takeEvery, select, call, fork } from 'redux-saga/effects'
+import { put, all, takeEvery, call, fork } from 'redux-saga/effects'
 import { appName, AUD_CURRENCY, XBT_CURRENCY } from '../config'
 import { initCurrenciesSaga } from './currencies'
-import { startMonitoringTradesSaga, stopMonitoringTradesSaga } from './trades'
+import { startMonitoringTradesSaga } from './trades'
+import { startMonitoringOrderBooksSaga } from './order-book'
 import { createSelector } from 'reselect'
 import { Record } from 'immutable'
 
@@ -78,6 +79,7 @@ export function* initSettingsSaga() {
   yield call(initCurrenciesSaga)
 
   yield fork(startMonitoringTradesSaga)
+  yield fork(startMonitoringOrderBooksSaga)
 
   yield put({
     type: INIT_SETTINGS_SUCCESS

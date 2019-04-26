@@ -105,7 +105,3 @@ export function* initCurrenciesSaga() {
     type: INIT_CURRENCIES_SUCCESS
   })
 }
-
-export function* saga() {
-  yield all([])
-}

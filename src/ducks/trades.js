@@ -1,6 +1,6 @@
 import { appName } from '../config'
 import { all, put, call, take, select } from 'redux-saga/effects'
-import Socket, { buildTickerChannels } from '../services/sockets'
+import Socket, { buildTickerChannel } from '../services/sockets'
 import {
   primaryCurrenciesSelector,
   secondaryCurrenciesSelector
@@ -24,7 +24,6 @@ export const TRADE_SIDE_SELL = 'Sell'
 /**
  * Reducer
  */
-
 const defaultTrades = new Map()
 const TradeRecord = Record({
   guid: null,
@@ -42,17 +41,16 @@ export default function reducer(state = new ReducerRecord(), action) {
   const { type, payload } = action
   switch (type) {
     case TRADES_NEW_TRADE:
-      return state.mergeDeepIn(
-        [
-          'entities',
-          `${payload.primaryCurrency}`,
-          `${payload.secondaryCurrency}`
-        ],
-        toEntities([payload])
-      )
+      return state.mergeDeepIn(toEntityId(payload), toEntities([payload]))
   }
   return state
 }
+
+const toEntityId = (trade) => [
+  'entities',
+  `${trade.primaryCurrency}`,
+  `${trade.secondaryCurrency}`
+]
 
 const toEntities = (values) => {
   return new Map(values.map((val) => [val.guid, new TradeRecord(val)]))
@@ -67,7 +65,7 @@ const wsResponseToTrade = ({
   Side
 }) => {
   const { primary, secondary } = parseCurrencyPair(Pair)
-  const trade = new TradeRecord({
+  return new TradeRecord({
     guid: TradeGuid,
     date: TradeDate,
     volume: Volume,
@@ -76,15 +74,12 @@ const wsResponseToTrade = ({
     secondaryCurrency: secondary,
     side: Side
   })
-  return trade
 }
 
 /**
  * Selectors
  */
-
 const stateSelector = (state) => state[moduleName]
-
 const currencyPairSelector = (state, primaryCurrency, secondaryCurrency) => {
   return {
     primaryCurrency,
@@ -133,7 +128,6 @@ const newTrade = (trade) => ({
 /**
  * Sagas
  */
-
 export function* startMonitoringTradesSaga() {
   yield put({
     type: TRADES_MONITOR_START
@@ -143,13 +137,13 @@ export function* startMonitoringTradesSaga() {
   const primaryCurrencies = primaryCurrenciesSelector(state)
   const secondaryCurrencies = secondaryCurrenciesSelector(state)
 
-  const url = buildTickerChannels(primaryCurrencies, secondaryCurrencies)
+  const url = buildTickerChannel(primaryCurrencies, secondaryCurrencies)
   const channel = yield call(createWsChannel, url)
 
   try {
     while (true) {
-      const { Data } = yield take(channel)
-      yield put(newTrade(wsResponseToTrade(Data)))
+      const action = yield take(channel)
+      yield put(action)
     }
   } catch (e) {}
 }
@@ -158,15 +152,11 @@ function* createWsChannel(url) {
   return Socket.init({
     url,
     processMessage: (emit, msg) => {
-      const { Event } = msg
+      const { Event, Data } = msg
       if (Event !== WS_EVENT_TRADE) {
         return
       }
-      emit(msg)
+      emit(newTrade(wsResponseToTrade(Data)))
     }
   })
-}
-
-export function* saga() {
-  yield all([])
 }
