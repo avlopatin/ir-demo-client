@@ -1,5 +1,5 @@
 import { appName } from '../config'
-import { all, put, call, take, select } from 'redux-saga/effects'
+import { put, call, take, select } from 'redux-saga/effects'
 import Socket, { buildTickerChannel } from '../services/sockets'
 import {
   primaryCurrenciesSelector,
@@ -41,7 +41,7 @@ export default function reducer(state = new ReducerRecord(), action) {
   const { type, payload } = action
   switch (type) {
     case TRADES_NEW_TRADE:
-      return state.mergeDeepIn(toEntityId(payload), toEntities([payload]))
+      return state.setIn(toEntityId(payload), new TradeRecord(payload))
   }
   return state
 }
@@ -49,12 +49,9 @@ export default function reducer(state = new ReducerRecord(), action) {
 const toEntityId = (trade) => [
   'entities',
   `${trade.primaryCurrency}`,
-  `${trade.secondaryCurrency}`
+  `${trade.secondaryCurrency}`,
+  `${trade.guid}`
 ]
-
-const toEntities = (values) => {
-  return new Map(values.map((val) => [val.guid, new TradeRecord(val)]))
-}
 
 const wsResponseToTrade = ({
   TradeGuid,

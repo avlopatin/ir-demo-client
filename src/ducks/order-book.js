@@ -41,12 +41,12 @@ export default function reducer(state = new ReducerRecord(), action) {
 
   switch (type) {
     case ORDER_BOOK_ORDER_CREATED:
-      return state.mergeDeepIn(toEntityId(payload), toEntities([payload]))
+      return state.setIn(toEntityId(payload), new OrderRecord(payload))
     case ORDER_BOOK_ORDER_CANCELLED:
-      return state.removeIn([...toEntityId(payload), payload.guid])
+      return state.removeIn(toEntityId(payload))
     case ORDER_BOOK_ORDER_CHANGED:
       return state.updateIn(
-        [...toEntityId(payload), payload.guid, 'volume'],
+        [...toEntityId(payload), 'volume'],
         (volume) => payload.volume
       )
   }
@@ -57,7 +57,8 @@ const toEntityId = (order) => [
   'entities',
   `${order.primaryCurrency}`,
   `${order.secondaryCurrency}`,
-  `${order.type}`
+  `${order.type}`,
+  `${order.guid}`
 ]
 
 const toEntities = (values) => {
