@@ -73,10 +73,6 @@ export const secondaryCurrenciesSelector = createSelector(
 )
 
 /**
- * Action Creators
- */
-
-/**
  * Sagas
  */
 export function* fetchCurrenciesSaga(isPrimary) {

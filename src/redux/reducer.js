@@ -10,7 +10,7 @@ import settingsReducer, {
 import tradesReducer, { moduleName as tradesModule } from '../ducks/trades'
 import orderBookReducer, {
   moduleName as orderBookModule
-} from '../ducks/order-book'
+} from '../ducks/orderbook'
 
 export default combineReducers({
   router: connectRouter(history),

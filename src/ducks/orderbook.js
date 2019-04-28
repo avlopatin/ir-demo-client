@@ -8,6 +8,7 @@ import {
 import Socket from '../services/sockets'
 import { put, select, call, take } from 'redux-saga/effects'
 import { parseCurrencyPair } from '../utils'
+import { createSelector } from 'reselect/lib/index'
 
 /**
  * Constants
@@ -17,6 +18,8 @@ export const prefix = `${appName}/${moduleName}`
 const WS_EVENT_ORDER_CREATED = 'NewOrder'
 const WS_EVENT_ORDER_CANCELLED = 'OrderCanceled'
 const WS_EVENT_ORDER_CHANGED = 'OrderChanged'
+const WS_ORDER_TYPE_LIMIT_OFFER = 'LimitOffer'
+const WS_ORDER_TYPE_LIMIT_BID = 'LimitBid'
 export const ORDER_BOOK_MONITOR_START = `${prefix}/ORDER_BOOK_MONITOR_START`
 export const ORDER_BOOK_ORDER_CREATED = `${prefix}/ORDER_BOOK_ORDER_CREATED`
 export const ORDER_BOOK_ORDER_CANCELLED = `${prefix}/ORDER_BOOK_ORDER_CANCELLED`
@@ -61,10 +64,6 @@ const toEntityId = (order) => [
   `${order.guid}`
 ]
 
-const toEntities = (values) => {
-  return new Map(values.map((val) => [val.guid, new OrderRecord(val)]))
-}
-
 const wsResponseToNewOrder = ({
   OrderGuid,
   Volume,
@@ -108,6 +107,51 @@ const wsResponseToChangedOrder = ({ OrderGuid, Pair, OrderType, Volume }) => {
  * Selectors
  */
 const stateSelector = (state) => state[moduleName]
+const currencyPairSelector = (state, primaryCurrency, secondaryCurrency) => {
+  return {
+    primaryCurrency,
+    secondaryCurrency
+  }
+}
+
+const currencyPairEntitiesSelector = createSelector(
+  [stateSelector, currencyPairSelector],
+  (state, { primaryCurrency, secondaryCurrency }) => {
+    return state.getIn([
+      'entities',
+      `${primaryCurrency}`,
+      `${secondaryCurrency}`
+    ])
+  }
+)
+
+export const offersSelector = createSelector(
+  currencyPairEntitiesSelector,
+  (entities) => {
+    const offersEntities = entities
+      ? entities.get(WS_ORDER_TYPE_LIMIT_OFFER)
+      : null
+    return offersEntities
+      ? offersEntities
+          .valueSeq()
+          .toArray()
+          .sort((a, b) => a.price - b.price)
+      : null
+  }
+)
+
+export const bidsSelector = createSelector(
+  currencyPairEntitiesSelector,
+  (entities) => {
+    const bidsEntities = entities ? entities.get(WS_ORDER_TYPE_LIMIT_BID) : null
+    return bidsEntities
+      ? bidsEntities
+          .valueSeq()
+          .toArray()
+          .sort((a, b) => b.price - a.price)
+      : null
+  }
+)
 
 /**
  * Action Creators

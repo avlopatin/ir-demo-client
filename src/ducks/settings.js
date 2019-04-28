@@ -2,7 +2,7 @@ import { put, all, takeEvery, call, fork } from 'redux-saga/effects'
 import { appName, AUD_CURRENCY, XBT_CURRENCY } from '../config'
 import { initCurrenciesSaga } from './currencies'
 import { startMonitoringTradesSaga } from './trades'
-import { startMonitoringOrderBooksSaga } from './order-book'
+import { startMonitoringOrderBooksSaga } from './orderbook'
 import { createSelector } from 'reselect'
 import { Record } from 'immutable'
 
