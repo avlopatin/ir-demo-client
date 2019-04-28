@@ -1,7 +1,11 @@
 import { startMonitoringOrderBooksSaga } from './sagas'
 import { bidsPageIndexChanged, offersPageIndexChanged } from './action-creators'
 import reducer from './reducer'
-import { offersPageSelector, bidsPageSelector } from './selectors'
+import {
+  offersPageSelector,
+  bidsPageSelector,
+  spreadSelector
+} from './selectors'
 import { moduleName } from './constants'
 
 export default reducer
@@ -12,5 +16,6 @@ export {
   bidsPageIndexChanged,
   offersPageIndexChanged,
   offersPageSelector,
-  bidsPageSelector
+  bidsPageSelector,
+  spreadSelector
 }

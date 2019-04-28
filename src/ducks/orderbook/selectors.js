@@ -5,6 +5,7 @@ import {
   WS_ORDER_TYPE_LIMIT_OFFER,
   moduleName
 } from './constants'
+import { DECIMAL_PLACES } from '../../config'
 
 const stateSelector = (state) => state[moduleName]
 
@@ -84,4 +85,22 @@ export const offersPageSelector = createSelector(
 export const bidsPageSelector = createSelector(
   [bidsSelector, bidsPagination],
   (bids, pagination) => page(bids, pagination.size, pagination.index)
+)
+
+const bestValueOfSide = (data) =>
+  data != null && data.length > 0 ? data[0].price : 0
+const bestBidSelector = createSelector(
+  bidsSelector,
+  (bids) => bestValueOfSide(bids)
+)
+const bestOfferSelector = createSelector(
+  offersSelector,
+  (offers) => bestValueOfSide(offers)
+)
+export const spreadSelector = createSelector(
+  [bestBidSelector, bestOfferSelector],
+  (bestBid, bestOffer) => {
+    if (bestBid === 0 && bestOffer === 0) return null
+    return Math.abs(bestBid - bestOffer).toFixed(DECIMAL_PLACES)
+  }
 )

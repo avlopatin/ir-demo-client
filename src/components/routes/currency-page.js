@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { selectedSecondaryCurrency } from '../../ducks/settings'
 import TradesTable from '../trades/trades-table'
 import OrderBook from '../orderbook'
+import Spread from '../spread'
 
 function CurrencyPage({ secondaryCurrency, match }) {
   const [primaryCurrency, setPrimaryCurrency] = useState('')
@@ -21,6 +22,14 @@ function CurrencyPage({ secondaryCurrency, match }) {
           />{' '}
         </div>
         <div className="col-md-7">
+          <div className="row">
+            <div className="col-md-12">
+              <Spread
+                primaryCurrency={primaryCurrency}
+                secondaryCurrency={secondaryCurrency}
+              />
+            </div>
+          </div>
           <div className="row">
             <div className="col-md-12">
               <OrderBook
