@@ -1,4 +1,4 @@
-import { appName } from '../config'
+import { appName, PAGINATION_INDEX, PAGINATION_SIZE } from '../config'
 import { Map, Record } from 'immutable'
 import { buildOrderBookChannel } from '../services/sockets'
 import {
@@ -8,7 +8,8 @@ import {
 import Socket from '../services/sockets'
 import { put, select, call, take } from 'redux-saga/effects'
 import { parseCurrencyPair } from '../utils'
-import { createSelector } from 'reselect/lib/index'
+import { createSelector } from 'reselect'
+import { page } from '../common/models'
 
 /**
  * Constants
@@ -24,9 +25,32 @@ export const ORDER_BOOK_MONITOR_START = `${prefix}/ORDER_BOOK_MONITOR_START`
 export const ORDER_BOOK_ORDER_CREATED = `${prefix}/ORDER_BOOK_ORDER_CREATED`
 export const ORDER_BOOK_ORDER_CANCELLED = `${prefix}/ORDER_BOOK_ORDER_CANCELLED`
 export const ORDER_BOOK_ORDER_CHANGED = `${prefix}/ORDER_BOOK_ORDER_CHANGED`
+export const ORDER_BOOK_SIDE_PAGE_INDEX_CHANGED = `${prefix}/ORDER_BOOK_SIDE_PAGE_INDEX_CHANGED`
+export const ORDER_BOOK_SIDE_PAGE_SIZE_CHANGED = `${prefix}/ORDER_BOOK_SIDE_PAGE_SIZE_CHANGED`
+
 /**
  * Reducer
  */
+
+const PaginationRecord = Record({
+  type: null,
+  index: 0,
+  size: 0
+})
+
+const defaultSidePagination = (type) =>
+  new PaginationRecord({
+    type: type,
+    index: PAGINATION_INDEX,
+    size: PAGINATION_SIZE
+  })
+const defaultPagination = new Map({
+  [`${WS_ORDER_TYPE_LIMIT_OFFER}`]: defaultSidePagination(
+    WS_ORDER_TYPE_LIMIT_OFFER
+  ),
+  [`${WS_ORDER_TYPE_LIMIT_BID}`]: defaultSidePagination(WS_ORDER_TYPE_LIMIT_BID)
+})
+
 const defaultOrders = new Map()
 const OrderRecord = Record({
   guid: null,
@@ -37,7 +61,8 @@ const OrderRecord = Record({
   type: null
 })
 const ReducerRecord = Record({
-  entities: defaultOrders
+  entities: defaultOrders,
+  pagination: defaultPagination
 })
 export default function reducer(state = new ReducerRecord(), action) {
   const { type, payload } = action
@@ -50,11 +75,23 @@ export default function reducer(state = new ReducerRecord(), action) {
     case ORDER_BOOK_ORDER_CHANGED:
       return state.updateIn(
         [...toEntityId(payload), 'volume'],
-        (volume) => payload.volume
+        () => payload.volume
+      )
+    case ORDER_BOOK_SIDE_PAGE_INDEX_CHANGED:
+      return state.updateIn(
+        [...toPaginationId(payload), 'index'],
+        () => payload.index
+      )
+    case ORDER_BOOK_SIDE_PAGE_SIZE_CHANGED:
+      return state.updateIn(
+        [...toPaginationId(payload), 'size'],
+        () => payload.size
       )
   }
   return state
 }
+
+const toPaginationId = ({ type }) => ['pagination', `${type}`]
 
 const toEntityId = (order) => [
   'entities',
@@ -107,6 +144,7 @@ const wsResponseToChangedOrder = ({ OrderGuid, Pair, OrderType, Volume }) => {
  * Selectors
  */
 const stateSelector = (state) => state[moduleName]
+
 const currencyPairSelector = (state, primaryCurrency, secondaryCurrency) => {
   return {
     primaryCurrency,
@@ -125,32 +163,64 @@ const currencyPairEntitiesSelector = createSelector(
   }
 )
 
-export const offersSelector = createSelector(
+const bidsSelector = createSelector(
   currencyPairEntitiesSelector,
-  (entities) => {
-    const offersEntities = entities
-      ? entities.get(WS_ORDER_TYPE_LIMIT_OFFER)
-      : null
-    return offersEntities
-      ? offersEntities
-          .valueSeq()
-          .toArray()
-          .sort((a, b) => a.price - b.price)
-      : null
+  (entities) =>
+    prepareOrderBookSide(
+      entities,
+      WS_ORDER_TYPE_LIMIT_BID,
+      (a, b) => b.price - a.price
+    )
+)
+
+const offersSelector = createSelector(
+  currencyPairEntitiesSelector,
+  (entities) =>
+    prepareOrderBookSide(
+      entities,
+      WS_ORDER_TYPE_LIMIT_OFFER,
+      (a, b) => a.price - b.price
+    )
+)
+
+const prepareOrderBookSide = (entities, type, sortProcessor) => {
+  if (!entities) return null
+  const requiredData = entities.get(type)
+  if (!requiredData) return null
+
+  return requiredData
+    .valueSeq()
+    .toArray()
+    .sort(sortProcessor)
+}
+
+const paginationSelector = createSelector(
+  stateSelector,
+  (state) => state.get('pagination')
+)
+
+const bidsPagination = createSelector(
+  paginationSelector,
+  (pagination) => {
+    return pagination.get(WS_ORDER_TYPE_LIMIT_BID)
   }
 )
 
-export const bidsSelector = createSelector(
-  currencyPairEntitiesSelector,
-  (entities) => {
-    const bidsEntities = entities ? entities.get(WS_ORDER_TYPE_LIMIT_BID) : null
-    return bidsEntities
-      ? bidsEntities
-          .valueSeq()
-          .toArray()
-          .sort((a, b) => b.price - a.price)
-      : null
+const offersPagination = createSelector(
+  paginationSelector,
+  (pagination) => {
+    return pagination.get(WS_ORDER_TYPE_LIMIT_OFFER)
   }
+)
+
+export const offersPageSelector = createSelector(
+  [offersSelector, offersPagination],
+  (offers, pagination) => page(offers, pagination.size, pagination.index)
+)
+
+export const bidsPageSelector = createSelector(
+  [bidsSelector, bidsPagination],
+  (bids, pagination) => page(bids, pagination.size, pagination.index)
 )
 
 /**
@@ -170,6 +240,23 @@ const orderChanged = (order) => ({
   type: ORDER_BOOK_ORDER_CHANGED,
   payload: order
 })
+
+export const bidsPageIndexChanged = (index) => ({
+  type: ORDER_BOOK_SIDE_PAGE_INDEX_CHANGED,
+  payload: {
+    type: WS_ORDER_TYPE_LIMIT_BID,
+    index
+  }
+})
+
+export const offersPageIndexChanged = (index) => ({
+  type: ORDER_BOOK_SIDE_PAGE_INDEX_CHANGED,
+  payload: {
+    type: WS_ORDER_TYPE_LIMIT_OFFER,
+    index
+  }
+})
+
 /**
  * Sagas
  */

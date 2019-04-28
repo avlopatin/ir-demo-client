@@ -1,10 +1,22 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { offersSelector, bidsSelector } from '../../ducks/orderbook'
+import {
+  offersPageSelector,
+  bidsPageSelector,
+  bidsPageIndexChanged,
+  offersPageIndexChanged
+} from '../../ducks/orderbook'
 import CurrencyPairName from '../common/currency-pair-name'
 import OrderBookSide from './orderbook-side'
 
-function OrderBook({ primaryCurrency, secondaryCurrency, bids, offers }) {
+function OrderBook({
+  primaryCurrency,
+  secondaryCurrency,
+  bidsPage,
+  offersPage,
+  bidsPageIndexChanged,
+  offersPageIndexChanged
+}) {
   const renderOrderBook = () => (
     <div className="row">
       <div className="col-md-6">{renderBids()}</div>
@@ -12,12 +24,21 @@ function OrderBook({ primaryCurrency, secondaryCurrency, bids, offers }) {
     </div>
   )
 
-  const renderOffers = () => renderBookSide('Sellers', offers)
-  const renderBids = () => renderBookSide('Buyers', bids)
+  const renderOffers = () =>
+    renderBookSide('Sellers', offersPage, offersPageIndexChanged)
+  const renderBids = () =>
+    renderBookSide('Buyers', bidsPage, bidsPageIndexChanged)
 
-  const renderBookSide = (name, orders) => {
-    return <OrderBookSide orders={orders} name={name} />
+  const renderBookSide = (name, page, paginationHandler) => {
+    return (
+      <OrderBookSide
+        page={page}
+        name={name}
+        paginationHandler={paginationHandler}
+      />
+    )
   }
+
   return (
     <div className="card">
       <div className="card-header card-header-primary">
@@ -37,7 +58,16 @@ function OrderBook({ primaryCurrency, secondaryCurrency, bids, offers }) {
 }
 
 const mapStateToProps = (state, { primaryCurrency, secondaryCurrency }) => ({
-  offers: offersSelector(state, primaryCurrency, secondaryCurrency),
-  bids: bidsSelector(state, primaryCurrency, secondaryCurrency)
+  offersPage: offersPageSelector(state, primaryCurrency, secondaryCurrency),
+  bidsPage: bidsPageSelector(state, primaryCurrency, secondaryCurrency)
 })
-export default connect(mapStateToProps)(OrderBook)
+
+const mapDispatchToProps = {
+  bidsPageIndexChanged,
+  offersPageIndexChanged
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(OrderBook)
