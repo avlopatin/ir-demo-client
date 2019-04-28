@@ -16,7 +16,7 @@ function PrimaryCurrencyCard({
 }) {
   function renderLastTradeTime() {
     if (!lastTrade) {
-      return
+      return 'No last trade'
     }
 
     return (
