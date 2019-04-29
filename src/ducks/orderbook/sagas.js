@@ -52,7 +52,7 @@ function* createWsChannel(url) {
           break
         case WS_EVENT_ORDER_CHANGED:
           const { Volume } = Data
-          if (Volume === 0) {
+          if (!Volume || Volume === 0) {
             emit(orderCancelled(wsResponseToCancelledOrder(Data)))
           } else {
             emit(orderChanged(wsResponseToChangedOrder(Data)))
