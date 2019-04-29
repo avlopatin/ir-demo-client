@@ -1,6 +1,6 @@
 {
   "name": "ir-demo-client",
-  "proxy": "http://dev.api.independentreserve.net",
+  "proxy": "https://api.independentreserve.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

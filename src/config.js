@@ -8,5 +8,5 @@ export const PAGINATION_SIZE = 10
 
 export const DECIMAL_PLACES = 2
 
-//export const SOCKET_BASE_URL = 'wss://websockets.independentreserve.com'
-export const SOCKET_BASE_URL = 'ws://dev.pushservice.independentreserve.net'
+export const SOCKET_BASE_URL = 'wss://websockets.independentreserve.com'
+//export const SOCKET_BASE_URL = 'ws://dev.pushservice.independentreserve.net'
