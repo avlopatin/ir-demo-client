@@ -1,22 +1,39 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { currencyPairTradesSelector } from '../../ducks/trades'
+import { tradesPageSelector, tradesPageIndexChanged } from '../../ducks/trades'
 import TradeRow from './trade-row'
 import CurrencyPairName from '../common/currency-pair-name'
 import NoDataRow from '../common/no-data-row'
+import Pagination from '../common/pagination'
 
-function TradesTable({ trades, primaryCurrency, secondaryCurrency }) {
+function TradesTable({
+  tradesPage,
+  primaryCurrency,
+  secondaryCurrency,
+  tradesPageIndexChanged
+}) {
   function renderTrades() {
-    if (!trades) {
+    const { items } = tradesPage
+    if (!items || items.length === 0) {
       return <NoDataRow colSpan={4} />
     }
-    return trades.map((trade) => <TradeRow trade={trade} key={trade.guid} />)
+    return items.map((trade) => <TradeRow trade={trade} key={trade.guid} />)
   }
 
   return (
     <div className="card">
       <div className="card-header card-header-primary">
-        <h4 className="card-title">Last trades</h4>
+        <h4 className="card-title">
+          Last trades
+          <span className="pull-right">
+            {
+              <Pagination
+                page={tradesPage}
+                paginationHandler={tradesPageIndexChanged}
+              />
+            }
+          </span>
+        </h4>
         <p className="card-category">
           {
             <CurrencyPairName
@@ -46,7 +63,14 @@ function TradesTable({ trades, primaryCurrency, secondaryCurrency }) {
 }
 
 const mapStateToProps = (state, { primaryCurrency, secondaryCurrency }) => ({
-  trades: currencyPairTradesSelector(state, primaryCurrency, secondaryCurrency)
+  tradesPage: tradesPageSelector(state, primaryCurrency, secondaryCurrency)
 })
 
-export default connect(mapStateToProps)(TradesTable)
+const mapDispatchToProps = {
+  tradesPageIndexChanged
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TradesTable)

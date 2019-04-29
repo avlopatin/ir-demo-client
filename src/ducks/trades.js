@@ -1,4 +1,4 @@
-import { appName } from '../config'
+import { appName, PAGINATION_INDEX, PAGINATION_SIZE } from '../config'
 import { put, call, take, select } from 'redux-saga/effects'
 import Socket, { buildTickerChannel } from '../services/sockets'
 import {
@@ -8,6 +8,13 @@ import {
 import { parseCurrencyPair } from '../utils'
 import { Map, Record } from 'immutable'
 import { createSelector } from 'reselect'
+import {
+  ORDER_BOOK_SIDE_PAGE_INDEX_CHANGED,
+  ORDER_BOOK_SIDE_PAGE_SIZE_CHANGED,
+  WS_ORDER_TYPE_LIMIT_BID,
+  WS_ORDER_TYPE_LIMIT_OFFER
+} from './orderbook/constants'
+import { page } from '../common/models'
 
 /**
  * Constants
@@ -20,10 +27,23 @@ const WS_EVENT_TRADE = 'Trade'
 const TRADES_NEW_TRADE = `${prefix}/TRADES_NEW_TRADE`
 export const TRADE_SIDE_BUY = 'Buy'
 export const TRADE_SIDE_SELL = 'Sell'
+export const TRADES_PAGE_INDEX_CHANGED = `${prefix}/TRADES_PAGE_INDEX_CHANGED`
+export const TRADES_PAGE_SIZE_CHANGED = `${prefix}/TRADES_PAGE_SIZE_CHANGED`
 
 /**
  * Reducer
  */
+
+export const PaginationRecord = Record({
+  index: 0,
+  size: 0
+})
+
+export const defaultPagination = new PaginationRecord({
+  index: PAGINATION_INDEX,
+  size: PAGINATION_SIZE
+})
+
 const defaultTrades = new Map()
 const TradeRecord = Record({
   guid: null,
@@ -35,13 +55,18 @@ const TradeRecord = Record({
   side: null
 })
 const ReducerRecord = Record({
-  entities: defaultTrades
+  entities: defaultTrades,
+  pagination: defaultPagination
 })
 export default function reducer(state = new ReducerRecord(), action) {
   const { type, payload } = action
   switch (type) {
     case TRADES_NEW_TRADE:
       return state.setIn(toEntityId(payload), new TradeRecord(payload))
+    case TRADES_PAGE_INDEX_CHANGED:
+      return state.updateIn(['pagination', 'index'], () => payload)
+    case TRADES_PAGE_SIZE_CHANGED:
+      return state.updateIn(['pagination', 'size'], () => payload)
   }
   return state
 }
@@ -114,6 +139,16 @@ export const currencyPairTradesSelector = createSelector(
   }
 )
 
+const paginationSelector = createSelector(
+  stateSelector,
+  (state) => state.get('pagination')
+)
+
+export const tradesPageSelector = createSelector(
+  [currencyPairTradesSelector, paginationSelector],
+  (trades, pagination) => page(trades, pagination.size, pagination.index)
+)
+
 /**
  * Action Creators
  */
@@ -121,7 +156,10 @@ const newTrade = (trade) => ({
   type: TRADES_NEW_TRADE,
   payload: trade
 })
-
+export const tradesPageIndexChanged = (index) => ({
+  type: TRADES_PAGE_INDEX_CHANGED,
+  payload: index
+})
 /**
  * Sagas
  */
