@@ -2,6 +2,8 @@ import React from 'react'
 import OrderBookRow from './orderbook-row'
 import NoDataRow from '../common/no-data-row'
 import Pagination from '../common/pagination'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+import './index.css'
 
 function OrderBookSide({ name, page, paginationHandler }) {
   function renderOrders() {
@@ -30,7 +32,17 @@ function OrderBookSide({ name, page, paginationHandler }) {
               <th>Value</th>
             </tr>
           </thead>
-          <tbody>{renderOrders()}</tbody>
+
+          <ReactCSSTransitionGroup
+            transitionName="fade"
+            transitionEnterTimeout={500}
+            transitionLeaveTimeout={300}
+            transitionAppearTimeout={500}
+            transitionAppear={true}
+            component="tbody"
+          >
+            {renderOrders()}
+          </ReactCSSTransitionGroup>
         </table>
       </div>
     </div>
